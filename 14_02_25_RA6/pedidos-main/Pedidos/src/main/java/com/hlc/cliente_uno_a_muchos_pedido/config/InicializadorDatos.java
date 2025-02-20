@@ -48,9 +48,6 @@ public class InicializadorDatos implements CommandLineRunner {
 
     private final Faker faker = new Faker(new Locale("es"));
     
-    // ✅ Se declara como variable de instancia para garantizar su disponibilidad 
-    private List<Categoria> categoriasUnicas = new ArrayList<>();
-
 
     @Override
     @Transactional
@@ -58,7 +55,32 @@ public class InicializadorDatos implements CommandLineRunner {
         try {
             logger.info("🔄 Iniciando la carga de datos...");
             
-
+            //Creo las categorias     
+            List<Categoria> categorias = new ArrayList<>();                      
+            for (int i = 0; i < 10; i++) {             
+            	Categoria categoria = new Categoria();             
+            	categoria.setNombre(faker.color().name());             
+            	categoria.setDescripcion(faker.lorem().sentence());             
+            	categorias.add(categoria);                         
+            } 
+            
+            //Para eliminar los nombres repetidos            
+            Set<String> nombresVistos = new HashSet<>();
+            List<Categoria> categoriasUnicas = categorias.stream()
+            		.filter(categoria -> nombresVistos.add(categoria.getNombre()))
+            		.collect(Collectors.toList()); 
+            
+            // Guardar todas las categorias de una vez
+            categoriaRepository.saveAll(categoriasUnicas);
+            categoriaRepository.flush(); 
+            
+            // Comprobar            
+            if(categoriaRepository.findAll().size()>0) {           
+            	logger.info(" ✅ Categorias creadas y guardadas en la base de datos.");            
+            }else{ 
+            	logger.error(" ❌ Error durante la inicialización de datos: {}", "categoriaRepository");            
+            } 
+            
             List<Producto> productos = new ArrayList<>();
             for (int i = 0; i < 10; i++) {
                 Producto producto = new Producto();
@@ -66,14 +88,21 @@ public class InicializadorDatos implements CommandLineRunner {
                 producto.setDescripcion(faker.lorem().sentence());
                 producto.setPeso(faker.number().randomDouble(2, 1, 5));
                 producto.setStock(faker.number().numberBetween(10, 100));
-             // ✅ Seleccionar una categoría aleatoria SOLO SI HAY CATEGORÍAS
-               if (!categoriasUnicas.isEmpty()) { 
-               int indiceAleatorio = faker.random().nextInt(0, categoriasUnicas.size()); 
-               Categoria categoriaAleatoria = categoriasUnicas.get(indiceAleatorio); producto.setCategoria(categoriaAleatoria); }
+                
+             // Obtenemos la categoría elegida
+             // Usamos faker para generar un índice aleatorio entre 0 y (categoriasUnicas.size() - 1)
+             int indiceAleatorio = faker.random().nextInt(0, categoriasUnicas.size() - 1);                
+             Categoria categoriaAleatoria = categoriasUnicas.get(indiceAleatorio);
 
+             // Asignamos al producto
+             producto.setCategoria(categoriaAleatoria);
+                
+                productos.add(producto);
             }
             productoRepository.saveAll(productos); // Guardar todos los productos de una vez
             productoRepository.flush();
+
+
 
             logger.info("✅ Productos creados y guardados en la base de datos.");
 
@@ -121,25 +150,6 @@ public class InicializadorDatos implements CommandLineRunner {
 
             logger.info("✅ Pedidos creados y guardados en la base de datos.");
             logger.info("🎉 Inicialización de datos completada con éxito.");
-            
-        
-         // ✅ CREAR CATEGORÍAS 
-            List<Categoria> categorias = new ArrayList<>(); 
-            for (int i = 0; i < 10; i++) { 
-            	Categoria categoria = new Categoria(); categoria.setNombre(faker.color().name()); 
-            	categoria.setDescripcion(faker.lorem().sentence()); categorias.add(categoria); 
-            	} 
-            // ✅ Eliminar nombres repetidos y llenar la lista de instancia 
-            Set<String> nombresVistos = new HashSet<>(); 
-            categoriasUnicas = categorias.stream() .filter(categoria -> nombresVistos.add(categoria.getNombre())) .collect(Collectors.toList()); 
-            // ✅ Guardar categorías en la base de datos 
-            categoriaRepository.saveAll(categoriasUnicas); 
-            categoriaRepository.flush(); 
-            if (!categoriasUnicas.isEmpty()) { 
-            	logger.info("✅ Categorías creadas y guardadas en la base de datos."); }
-            else { logger.error("❌ No se guardaron categorías."); 
-            	return; // ❗ Evita continuar si no hay categorías }	
-            }
             
 
 

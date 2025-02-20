@@ -65,5 +65,10 @@ public class ProductoServicioImpl implements ProductoServicio {
     List<Producto> productos = productoRepository.findByCategoria(categoria.get());
     return productos;
     }
+    
+    @Override
+    public List<Categoria> obtenerTodasLasCategorias() {
+    return categoriaRepository.findAll();
+    }
 
 }

@@ -20,6 +20,7 @@ public class ProductoControlador {
     private static final String REDIRECT_LISTADO = "redirect:/productos";
     private static final String VISTA_LISTA = "productos/lista";
     private static final String VISTA_DETALLE = "productos/detalle";
+    private static final String LISTA_CATEGORIAS = "categoria/lista";
 
     @Autowired
     private ProductoServicio productoServicio;
@@ -39,6 +40,24 @@ public class ProductoControlador {
         }
         model.addAttribute("producto", producto);
         return VISTA_DETALLE;
+    }
+    
+    @GetMapping("/categoria")
+    public String mostrarListadoCategorias(
+    Model model,
+    @RequestParam(value = "nombre", required = false) String nombre_categoria
+    ) {
+    if (nombre_categoria != null && !nombre_categoria.isBlank()) {
+    System.out.println(nombre_categoria);
+    // Buscar productos por nombre de categoría
+    List<Producto> productos =
+    productoServicio.buscarPorNombreCategoria(nombre_categoria);
+    model.addAttribute("productos", productos);
+    return LISTA_CATEGORIAS;
+    } else {
+    // Si no hay nombre de categoría especificado, se redirige al listado
+    return REDIRECT_LISTADO;
+    }
     }
 
     @GetMapping("/nuevo")

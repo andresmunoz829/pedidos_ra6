@@ -13,4 +13,5 @@ public interface ProductoServicio {
 	    void eliminarProducto(Long id);
 	    List<Producto> buscarPorCategoria(Categoria categoria);
 	    List<Producto> buscarPorNombreCategoria(String categoria);
+	    List<Categoria> obtenerTodasLasCategorias();
 }
