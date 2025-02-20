@@ -1,10 +1,14 @@
 package com.hlc.cliente_uno_a_muchos_pedido.entidad;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,6 +27,11 @@ private Long id;
 private String nombre;
 @Size(max = 255, message = "La descripción no debe superar los 255 caracteres")
 private String descripcion;
+
+//Relación inversa: una categoría puede tener muchos productos
+@OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Producto> productos;
+
 public Long getId() {
 	return id;
 }
@@ -40,6 +49,12 @@ public String getDescripcion() {
 }
 public void setDescripcion(String descripcion) {
 	this.descripcion = descripcion;
+}
+public List<Producto> getProductos() {
+	return productos;
+}
+public void setProductos(List<Producto> productos) {
+	this.productos = productos;
 }
 
 

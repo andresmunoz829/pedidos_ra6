@@ -25,6 +25,10 @@ public class Producto {
     @NotNull(message = "El stock no puede ser nulo")
     @Min(value = 0, message = "El stock no puede ser negativo")
     private Integer stock;
+    
+    @ManyToOne
+    @JoinColumn(name = "categoria_id", nullable = false)
+    private Categoria categoria;
 
 
     public String getNombre() {
@@ -66,6 +70,16 @@ public class Producto {
     public void setStock(Integer stock) {
         this.stock = stock;
     }
+
+	public Categoria getCategoria() {
+		return categoria;
+	}
+
+	public void setCategoria(Categoria categoria) {
+		this.categoria = categoria;
+	}
+    
+    
 }
 
 
